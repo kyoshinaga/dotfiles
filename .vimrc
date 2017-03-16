@@ -1,3 +1,6 @@
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Borrow from https://github.com/Junichilto/dotfiles.git
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Set vim default setting
 set nocompatible
 
@@ -105,7 +108,71 @@ set list
 set listchars=tab:>\ ,extends:<
 " Display line number
 set number
-" Diplay
+" Diplay corresponding braket
+set showmatch
+" Inherit indent previous line
+set autoindent
+" Automaticaly indent
+set smartindent
+" Disable stopping cursor at head or end of line
+set whichwrap=b,s,h,l,<,>,[,]
+" Enable syntax coloring
+syntax on
+" Designate colorschema
+colorscheme desert
+" Color of line number
+highlight LineNr ctermfg=darkeyellow
+""""""""""""""""""""""""""""""""""""
+
+" Emable vim-indent-guides on vim startup
+let g:indent_guides_enable_on_vim_startup = 1
+
+" Display QueickFix List after running grep search
+autocmd QuickFixCmdPost *grep* cwindow
+
+"""""""""""""""""""""""
+" Setting for Unit.vim
+"""""""""""""""""""""""
+" Ref.: http://blog.remora.cx/2010/12/vim-ref-with-unite.html
+"
+" Enable insert mode on startup
+let g:unite_enable_start_insert = 1
+" List of buffers
+noremap <C-P> :Unite buffer<CR>
+" List of files
+noremap <C-N> :Unite -buffer-name=file file<CR>
+noremap <C-Z> :Unite file_mru<CR>
+noremap :utf :<C-u>UniteWithBufferDir file -buffer-name=file<CR>
+au FileType unite nnoremap <silent> <buffer> <expr> <C-J> unite#do_action('split')
+au FileType unite inoremap <silent> <buffer> <expr> <C-J> unite#do_action('split')
+au FileType unite nnoremap <silent> <buffer> <expr> <C-K> unite#do_action('vsplit')
+au FileType unite inoremap <silent> <buffer> <expr> <C-K> unite#do_action('vsplit')
+au FileType unite nnoremap <silent> <buffer> <ESC><ESC> :q<CR>
+au FileType unite inoremap <silent> <buffer> <ESC><ESC> <ESC>:q<CR>
+
+function! ZenkakuSpace()
+	ZenkakuSpace cterm=underline ctermfg=lightblue guibg=darkgray
+endfunction
+
+if has('syntax')
+	augroup ZenkakuSpace
+		autocmd!
+		autocmd ColorScheme * call ZenkakuSpace()
+		autocmd VimEnter,WinEnter,BufRead * let w:m1=matchadd('ZenkakuSpace','　')
+	augroup END
+	call ZenkakuSpace()
+endif
+
+let g:hi_insert = 'highlight Statusline guifg=darkblue guibg=darkyellow gui=none ctermfg=blue ctermbg=yellow cterm=none'
+
+if has('syntax')
+	augroup InsertHook
+		autocmd!
+		autocmd InsertEnter * call s:StatusLine('Enter')
+		autocmd InsertLeave * call s:StatusLine('Leave')
+	augroup END
+endif
+
 set history=2000
 set tabstop=4
 set shiftwidth=4
