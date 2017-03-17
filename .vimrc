@@ -46,7 +46,7 @@ NeoBundle 'tomtom/tcomment_vim'
 NeoBundle 'tpope/vim-surround'
 
 " Coloring indent
-NeoBundle 'nathanaeIkane/vim-indent-guides'
+NeoBundle 'nathanaelkane/vim-indent-guides'
 
 " Coloring log files
 NeoBundle 'vim-scripts/AnsiEsc.vim'
@@ -81,7 +81,7 @@ set cmdheight=2
 " Display status line constantly
 set laststatus=2
 " Define display style of status line
-set statusline=%<%f\ %m%r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=%l,%c%V%8P
+set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [ASCII=\%03.3b]\ [HEX=\%02.2B]\ [POS=%04l,%04v][%p%%]\ [LEN=%L]
 " Display title bar
 set title
 " Enable filename completion by tab on command line mode
@@ -121,7 +121,7 @@ syntax on
 " Designate colorschema
 colorscheme desert
 " Color of line number
-highlight LineNr ctermfg=darkeyellow
+highlight LineNr ctermfg=darkyellow
 """"""""""""""""""""""""""""""""""""
 
 " Emable vim-indent-guides on vim startup
@@ -151,7 +151,7 @@ au FileType unite nnoremap <silent> <buffer> <ESC><ESC> :q<CR>
 au FileType unite inoremap <silent> <buffer> <ESC><ESC> <ESC>:q<CR>
 
 function! ZenkakuSpace()
-	ZenkakuSpace cterm=underline ctermfg=lightblue guibg=darkgray
+	highlight ZenkakuSpace cterm=underline ctermfg=lightblue guibg=darkgray
 endfunction
 
 if has('syntax')
@@ -173,10 +173,54 @@ if has('syntax')
 	augroup END
 endif
 
-set history=2000
-set tabstop=4
-set shiftwidth=4
-set softtabstop=4
-set autochdir
-set laststatus=4
-set smartindent
+let s:slhlcmd = ''
+function! s:StatusLine(mode)
+	if a:mode == 'Enter'
+		silent! let s:slhlmcd = 'highlight ' . s:GetHighLight('StatusLine')
+		silent exec g:hi_insert
+	else
+		highlight clear StatusLine
+		silent exec s:slhlcmd
+	endif
+endfunction
+
+function! s:GetHighLight(hi)
+	redir => hl
+	exec 'highlight '.a:hi
+	redir END
+	let hl = substitute(hl, '[\r\n]', '', 'g')
+	let hl = substitute(hl, 'xxx', '', '')
+	return hl
+endfunction
+""""""""""""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""""""""""""
+" Restore the latest cursor position
+""""""""""""""""""""""""""""""""""""""""
+if has("autocmd")
+	autocmd BufReadPost *
+	\ if line("'\"") > 0 && line ("'\"") <= line("$") |
+	\ exe "normal! g'\"" |
+	\ endif
+endif
+""""""""""""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""""""""""""
+" Automatically closing brackets
+""""""""""""""""""""""""""""""""""""""""
+imap { {}<LEFT>
+imap [ []<LEFT>
+imap ( ()<LEFT>
+""""""""""""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""""""""""""
+" For python
+""""""""""""""""""""""""""""""""""""""""
+setlocal tabstop=4
+setlocal shiftwidth=4
+setlocal foldmethod=indent
+setlocal commentstring=#%s
+
+" Automatically detection filetype
+filetype on
+
