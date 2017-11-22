@@ -67,9 +67,3 @@ export PATH=$PATH:/usr/local/sbt/bin/
 # ls
 alias ls="ls --color"
 alias ll="ls --color -lh"
-
-# QA work
-export PATH=$PATH:/home/pascual/bin
-
-# ant
-export PATH=$PATH:$HOME/local/ant/bin
